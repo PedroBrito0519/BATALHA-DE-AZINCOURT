@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batalha de Azincourt - Etapa 2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="res/css/antesgame1.css">
+    <link rel="icon" href="res/assets/personagem.png">
+
+</head>
+<body>
+    <div class="container_modal">
+        <div class="dialogue">
+            <div class="dialogue-text">
+                <input type="text" id="dialogueInput" class="dialogue-input2" value="Você se prepara para a batalha." readonly>
+                <button class="btn_dialogo" id="nextButton" onclick="nextDialogue()">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dialogueIndex = 0;
+        const dialogues = [
+            { text: "As tropas inimigas avançam", background: "res/css/guerra2.jpg" },
+            { text: "e você deve decidir rapidamente como agir.'", background: "res/css/guerra2.jpg" },
+            { text: "As opções estão diante de você: .", background: "res/css/guerra2.jpg" },
+            { text: "reagrupar suas tropas ou atacar primeiro?", background: "res/css/guerra2.jpg" },
+            { text: "O que você fará para garantir a vitória?", background: "res/css/guerra2.jpg" },
+        ];
+
+        function nextDialogue() {
+            if (dialogueIndex < dialogues.length) {
+                const currentDialogue = dialogues[dialogueIndex];
+
+                // Atualiza o texto
+                document.getElementById("dialogueInput").value = currentDialogue.text;
+
+                // Atualiza o fundo da container_modal
+                document.querySelector('.container_modal').style.backgroundImage = `url(${currentDialogue.background})`;
+
+                dialogueIndex++;
+            } else {
+                window.location.href = 'game2.html'; // Redireciona para a próxima página
+            }
+        }
+    </script>
+    <script src="res/js/antesgame2.js"></script>
+</body>
+</html>

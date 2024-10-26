@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batalha de Azincourt - Etapa 3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="icon" href="res/assets/personagem.png">
+    <link rel="stylesheet" href="res/css/antesgame1.css">
+   
+</head>
+<body>
+    <div class="container_modal">
+        <div class="dialogue">
+            <div class="dialogue-text">
+                <input type="text" id="dialogueInput" class="dialogue-input2" value="Cada decisão é crucial." readonly>
+                <button class="btn_dialogo" id="nextButton" onclick="nextDialogue()">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dialogueIndex = 0;
+        const dialogues = [
+            { text: "A batalha se aproxima, e cada decisão é crucial.", background:"res/css/castelo2.gif" },
+            { text: "Os arqueiros estão posicionados, prontos para atacar.", background:"res/css/castelo2.gif" },
+            { text: "As tropas inimigas se organizam ao longe.", background:"res/css/castelo2.gif" },
+            { text: "Você deve decidir a melhor estratégia para vencer.", background:"res/css/castelo2.gif" },
+            { text: "Um ataque direto pode ser arriscado.", background:"res/css/castelo2.gif" },
+            { text: "Mas uma defesa sólida pode evitar perdas desnecessárias.", background:"res/css/castelo2.gif" },
+            { text: "Agora, prepare-se para o que está por vir.", background:"res/css/castelo2.gif" },
+        ];
+
+        function nextDialogue() {
+            if (dialogueIndex < dialogues.length) {
+                const currentDialogue = dialogues[dialogueIndex];
+
+                // Atualiza o texto
+                document.getElementById("dialogueInput").value = currentDialogue.text;
+
+                // Atualiza o fundo da container_modal
+                document.querySelector('.container_modal').style.backgroundImage = `url(${currentDialogue.background})`;
+
+                dialogueIndex++;
+            } else {
+                window.location.href = 'game3.html'; // Redireciona para a próxima página
+            }
+        }
+    </script>
+</body>
+</html>

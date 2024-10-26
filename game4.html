@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batalha de Azincourt - Etapa 4</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+        }
+        body {
+            font-family: 'Press Start 2P', cursive;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('res/css/castelo.gif');
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); 
+            z-index: 1; 
+        }
+        .container {
+            position: relative; 
+            z-index: 2; 
+        }
+        .title {
+            font-size: 48px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .btn {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: normal; 
+        }
+        .btn:hover {
+            background-color: #c0392b;
+        }
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%); 
+            width: 90%; 
+            max-width: 800px; 
+            height: auto;
+            background-color: rgba(255, 255, 255, 1); 
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7); 
+        }
+        .modal-content {
+            position: relative;
+            padding: 20px;
+            color: #000;
+            font-weight: normal; 
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        .suspect-list {
+            display: none;
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        .suspect {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .suspect img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 5px;
+        }
+        .lives {
+            display: flex;
+            align-items: center;
+            font-size: 16px; 
+        }
+        .life-icon {
+            width: 20px; 
+            height: 20px; 
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="introModal" class="modal">
+            <div class="modal-content">
+                <h2>Introdução</h2>
+                <p>Você chegou à quarta etapa da Batalha de Azincourt. Seus soldados estão esgotados, e o exército francês está se reorganizando para um ataque final. Suas decisões podem determinar o destino da batalha. O que você fará?</p>
+                <div class="controls">
+                    <button class="btn" onclick="startGame()">Começar o Jogo</button>
+                </div>
+            </div>
+        </div>
+        
+        <h1 class="title">Batalha de Azincourt - Etapa 4</h1>
+        <div id="options" class="buttons" style="display: none;">
+            <button class="btn" onclick="selectOption(0)">Focar na defesa das flancos</button>
+            <button class="btn" onclick="selectOption(1)">Realizar um ataque surpresa</button>
+            <button class="btn" onclick="selectOption(2)">Concentrar as tropas no centro</button>
+        </div>
+        
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <div id="story"></div>
+                <div class="controls">
+                    <button id="hintButton" class="btn" style="display: none;" onclick="giveHint()">DICA</button>
+                    <button id="suspectButton" class="btn" style="display: none;" onclick="showTroops()">Ver Tropas</button>
+                </div>
+                <div id="troops" class="suspect-list"></div>
+                <div id="lives" class="lives"></div>
+            </div>
+        </div>
+        
+        <div id="resultModal" class="modal">
+            <div class="modal-content">
+                <h2 id="resultMessage"></h2>
+                <div class="controls">
+                    <button class="btn" id="continueButton" onclick="continueGame()" style="display: none;">Continuar Jogo</button>
+                    <button class="btn" id="restartButton" onclick="restartGame()">Reiniciar Jogo</button>
+                    <button class="btn" id="menuButton" style="display: none;" onclick="showMenu()">Voltar ao Menu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stories = [
+            [
+                "Você decidiu focar na defesa das flancos. As tropas inimigas tentam explorar qualquer fraqueza. Qual tropa voce usa como ataque agora?",
+                "Mantenha a formação e prepare-se para o ataque.",
+                "Envie uma parte das tropas para reforçar o centro."
+            ],
+            [
+                "Você opta por realizar um ataque surpresa. Suas tropas avançam rapidamente, mas a comunicação é essencial. Qual tropa voce usa para liderar a comunicação agora?",
+                "Continue o ataque e mantenha a pressão.",
+                "Retorne para evitar um cerco."
+            ],
+            [
+                "Você decide concentrar suas tropas no centro. O exército inimigo está em movimento.Qual tropa voce usa para emboscar eles agora?",
+                "Prepare-se para um confronto direto.",
+                "Reforce os flancos para evitar serem cercados."
+            ]
+        ];
+
+        let currentStep = 0;
+        let currentOption = 0;
+        let lives = 3;
+
+        window.onload = function() {
+            document.getElementById("introModal").style.display = "block"; // Mostra a modal de introdução
+        };
+
+        function startGame() {
+            document.getElementById("introModal").style.display = "none"; // Esconde a modal de introdução
+            document.getElementById("options").style.display = "block"; // Mostra as opções
+        }
+
+        function selectOption(option) {
+            currentOption = option;
+            document.getElementById("story").innerText = stories[option][0];
+            document.getElementById("hintButton").style.display = "none"; // Esconde botão de DICA inicialmente
+            document.getElementById("suspectButton").style.display = "block"; // Mostrar botão de tropas
+            document.getElementById("modal").style.display = "block";
+            updateLives();
+            document.getElementById("options").style.display = "none"; // Esconde as opções após seleção
+        }
+
+        function giveHint() {
+            if (currentOption === 0) {
+                document.getElementById("story").innerText = "DICA: Uma defesa sólida pode resistir a ataques ferozes.";
+            } else if (currentOption === 1) {
+                document.getElementById("story").innerText = "DICA: Um ataque surpresa deve ser rápido e coordenado.";
+            } else if (currentOption === 2) {
+                document.getElementById("story").innerText = "DICA: Concentrar forças pode ser decisivo, mas proteja seus flancos.";
+            }
+            document.getElementById("suspectButton").style.display = "none"; // Esconde botão de tropas após DICA
+        }
+
+      
+        function showTroops() {
+            const troops = [
+                { name: "Cavaleiros", image: "./res/assets/cavaleiro.gif" },
+                { name: "Arqueiro 2", image: "./res/assets/arqueiro2.png" },
+                { name: "Infantaria 1", image: "./res/assets/personagem.png" },
+                { name: "Lanceiros", image: "./res/assets/lanceiro.png" },
+                { name: "Cavalaria", image: "./res/assets/recrutas-removebg-preview.png" },
+            ];
+
+            const troopList = document.getElementById("troops");
+            troopList.innerHTML = ''; // Limpa a lista anterior
+
+            troops.forEach(troop => {
+                const troopDiv = document.createElement("div");
+                troopDiv.className = "suspect";
+                troopDiv.innerHTML = `<img src="${troop.image}" alt="${troop.name}" onclick="chooseTroop('${troop.name}')"> ${troop.name}`;
+                troopList.appendChild(troopDiv);
+            });
+
+            troopList.style.display = "grid"; // Exibe a lista de tropas
+            document.getElementById("hintButton").style.display = "block"; // Exibe botão de DICA após ver as tropas
+        }
+
+        function chooseTroop(name) {
+            const correctTroop = "Cavalaria"; // Exemplo de tropa correta para a ação
+            if (name === correctTroop) {
+                endGame("Você fez a escolha certa e garantiu a vitória!", true);
+            } else {
+                lives--;
+                if (lives > 0) {
+                    document.getElementById("story").innerText = "Você escolheu a tropa errada. Tente novamente.";
+                    updateLives();
+                } else {
+                    endGame("Você escolheu a tropa errada e suas tropas foram derrotadas!");
+                }
+            }
+        }
+
+        function endGame(message, won = false) {
+            document.getElementById("modal").style.display = "none"; // Esconde a modal principal
+            document.getElementById("resultMessage").innerText = message; // Atualiza mensagem de resultado
+            document.getElementById("resultModal").style.display = "block"; // Mostra a modal de resultado
+            document.getElementById("menuButton").style.display = won ? "block" : "none"; // Mostra botão de menu se ganhou
+            document.getElementById("continueButton").style.display = won ? "block" : "none"; // Mostra botão de continuar se ganhou
+        }
+
+        function updateLives() {
+            const livesElement = document.getElementById("lives");
+            livesElement.innerHTML = '';
+            for (let i = 0; i < lives; i++) {
+                livesElement.innerHTML += `<img src="res/assets/vida.png" alt="Vida" class="life-icon">`; // Altere o caminho do ícone de vida
+            }
+            livesElement.innerHTML += `Vidas restantes: ${lives}`;
+        }
+
+        function continueGame() {
+            window.location.href = "etapas5.html"; // Redireciona para a próxima página
+        }
+
+        function restartGame() {
+            lives = 3;
+            currentStep = 0;
+            currentOption = 0;
+            document.getElementById("resultModal").style.display = "none"; // Esconde a modal de resultado
+            document.getElementById("troops").style.display = "none"; // Esconde a lista de tropas
+            document.getElementById("modal").style.display = "none"; // Esconde a modal principal
+            document.getElementById("options").style.display = "block"; // Mostra as opções
+            updateLives();
+        }
+
+        function showMenu() {
+            location.reload(); // Reinicia o jogo
+        }
+    </script>
+</body>
+</html>

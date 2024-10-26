@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General do Exército Inglês</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+        }
+        body {
+            font-family: 'Press Start 2P', cursive;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('res/css/castelo.gif');
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); 
+            z-index: 1; 
+        }
+        .container {
+            position: relative; 
+            z-index: 2; 
+        }
+        .title {
+            font-size: 48px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .btn {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: normal; /* Diminui o peso da fonte */
+        }
+        .btn:hover {
+            background-color: #c0392b;
+        }
+        .modal {
+            display: none; /* Escondido por padrão */
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%); /* Centraliza a modal */
+            width: 90%; /* Aumenta a largura da modal */
+            max-width: 800px; /* Largura máxima da modal */
+            height: auto;
+            background-color: rgba(255, 255, 255, 1); /* Fundo branco */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7); /* Sombra para destacar a modal */
+        }
+        .modal-content {
+            position: relative;
+            padding: 20px;
+            color: #000;
+            font-weight: normal; /* Diminui o peso da fonte */
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        .suspect-list {
+            display: none;
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        .suspect {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .suspect img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 5px;
+        }
+        .lives {
+            display: flex;
+            align-items: center;
+            font-size: 16px; /* Ajusta o tamanho da fonte */
+        }
+        .life-icon {
+            width: 20px; /* Tamanho do ícone de vida */
+            height: 20px; /* Tamanho do ícone de vida */
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="introModal" class="modal">
+            <div class="modal-content">
+                <h2>Introdução</h2>
+                <p>Você é o general do exército inglês, e rumores de um espião infiltrado em seu castelo estão circulando. A tensão está alta, e você deve agir rapidamente para proteger o rei e seu exército. Suas decisões determinarão o futuro do reino.</p>
+                <div class="controls">
+                    <button class="btn" onclick="startGame()">Começar o Jogo</button>
+                </div>
+            </div>
+        </div>
+        
+        <h1 class="title">General do Exército Inglês</h1>
+        <div id="options" class="buttons" style="display: none;">
+            <button class="btn" onclick="selectOption(0)">Procurar alertando o povo</button>
+            <button class="btn" onclick="selectOption(1)">Procurar sem alertar o povo</button>
+            <button class="btn" onclick="selectOption(2)">Achar que não há perigo</button>
+        </div>
+        
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <div id="story"></div>
+                <div class="controls">
+                    <button id="hintButton" class="btn" style="display: none;" onclick="giveHint()">DICA</button>
+                    <button id="suspectButton" class="btn" style="display: none;" onclick="showSuspects()">Ver Suspeitos</button>
+                </div>
+                <div id="suspects" class="suspect-list"></div>
+                <div id="lives" class="lives"></div>
+            </div>
+        </div>
+        
+        <div id="resultModal" class="modal">
+            <div class="modal-content">
+                <h2 id="resultMessage"></h2>
+                <div class="controls">
+                    <button class="btn" id="continueButton" onclick="continueGame()" style="display: none;">Continuar Jogo</button>
+                    <button class="btn" id="restartButton" onclick="restartGame()">Reiniciar Jogo</button>
+                    <button class="btn" id="menuButton" style="display: none;" onclick="showMenu()">Voltar ao Menu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stories = [
+            [
+                "Você decidiu procurar alertando o povo. Todos se mobilizam, e a atmosfera fica tensa. Após algumas horas, você descobre que o espião pode estar disfarçado entre os soldados. O que você fará a seguir?",
+                "Você deve investigar entre os soldados.",
+                "Você decide perguntar ao povo se alguém viu algo suspeito."
+            ],
+            [
+                "Você opta por procurar sem alertar o povo. Silenciosamente, você se move pelo castelo, mas encontra uma pista importante que pode levar ao espião. O que você faz agora?",
+                "Você segue a pista.",
+                "Você volta e alerta os outros sobre a possibilidade do espião."
+            ],
+            [
+                "Você acha que não há perigo. A situação parece calma, mas algumas horas depois, você descobre que o rei foi assassinado por um espião! O castelo agora está em caos.",
+                "O reino está em perigo! Você precisa agir rapidamente."
+            ]
+        ];
+
+        let currentStep = 0;
+        let currentOption = 0;
+        let lives = 3;
+
+        // Exibe a modal de introdução ao carregar a página
+        window.onload = function() {
+            document.getElementById("introModal").style.display = "block"; // Mostra a modal de introdução
+        };
+
+        function startGame() {
+            document.getElementById("introModal").style.display = "none"; // Esconde a modal de introdução
+            document.getElementById("options").style.display = "block"; // Mostra as opções
+        }
+
+        function selectOption(option) {
+            currentOption = option;
+            if (option === 2) {
+                endGame("Você achou que não havia perigo e o rei foi assassinado!");
+            } else {
+                document.getElementById("story").innerText = stories[option][0];
+                document.getElementById("hintButton").style.display = "none"; // Esconde botão de DICA inicialmente
+                document.getElementById("suspectButton").style.display = "block"; // Mostrar botão de suspeitos
+                document.getElementById("modal").style.display = "block";
+                updateLives();
+            }
+            document.getElementById("options").style.display = "none"; // Esconde as opções após seleção
+        }
+
+        function giveHint() {
+            if (currentOption === 0) {
+                document.getElementById("story").innerText = "DICA: Preste atenção nas reações dos soldados. Um deles pode parecer mais nervoso.";
+            } else if (currentOption === 1) {
+                document.getElementById("story").innerText = "DICA: Observe se há algum soldado que está agindo de forma estranha ou fugindo.";
+            }
+            document.getElementById("suspectButton").style.display = "none"; // Esconde botão de suspeitos após DICA
+        }
+
+        function showSuspects() {
+            const suspects = currentOption === 0 ?
+                [
+                    { name: "Suspeito 1", image: "./res/assets/boss-removebg-preview.png" },
+                    { name: "Suspeito 2", image: "./res/assets/personagem.png" },
+                    { name: "Suspeito 3", image: "./res/assets/arqueiro1.gif" },
+                    { name: "Suspeito 4", image: "./res/assets/arqueiro2.png" },
+                    { name: "Suspeito 5", image: "./res/assets/cavaleiro.gif" },
+                    { name: "Suspeito 6", image: "./res/assets/recrutas-removebg-preview.png" },
+                    { name: "Suspeito 7", image: "./res/assets/recrutas-removebg-preview.png" },
+                    { name: "Suspeito 8", image: "./res/assets/recrutas-removebg-preview.png" },
+                    { name: "Suspeito 9", image: "./res/assets/personagem.png" },
+                    { name: "Suspeito 10", image: "./res/assets/arqueiro1.gif" },
+                ] :
+                [
+                    { name: "Suspeito A", image: "./res/assets/boss-removebg-preview.png" },
+                    { name: "Suspeito B", image: "./res/assets/personagem.png" },
+                    { name: "Suspeito C", image: "./res/assets/arqueiro1.gif" },
+                    { name: "Suspeito D", image: "./res/assets/cavaleiro.gif" },
+                    { name: "Suspeito E", image: "./res/assets/recrutas-removebg-preview.png" },
+                  
+                ];
+
+            const suspectList = document.getElementById("suspects");
+            suspectList.innerHTML = ''; // Limpa a lista anterior
+
+            suspects.forEach(suspect => {
+                const suspectDiv = document.createElement("div");
+                suspectDiv.className = "suspect";
+                suspectDiv.innerHTML = `<img src="${suspect.image}" alt="${suspect.name}" onclick="chooseSuspect('${suspect.name}')"> ${suspect.name}`;
+                suspectList.appendChild(suspectDiv);
+            });
+
+            suspectList.style.display = "grid"; // Exibe a lista de suspeitos
+            document.getElementById("hintButton").style.display = "block"; // Exibe botão de DICA após ver os suspeitos
+        }
+
+        function chooseSuspect(name) {
+            const correctSuspect = currentOption === 0 ? "Suspeito 1" : "Suspeito C"; // Altere conforme necessário
+            if (name === correctSuspect) {
+                endGame("Você acertou! O espião foi capturado!", true);
+            } else {
+                lives--;
+                if (lives > 0) {
+                    document.getElementById("story").innerText = "Você escolheu o suspeito errado. Tente novamente.";
+                    updateLives();
+                } else {
+                    endGame("Você escolheu o suspeito errado e não sobreviveu!");
+                }
+            }
+        }
+
+        function endGame(message, won = false) {
+            document.getElementById("modal").style.display = "none"; // Esconde a modal principal
+            document.getElementById("resultMessage").innerText = message; // Atualiza mensagem de resultado
+            document.getElementById("resultModal").style.display = "block"; // Mostra a modal de resultado
+            document.getElementById("menuButton").style.display = won ? "block" : "none"; // Mostra botão de menu se ganhou
+            document.getElementById("continueButton").style.display = won ? "block" : "none"; // Mostra botão de continuar se ganhou
+        }
+
+        function updateLives() {
+            const livesElement = document.getElementById("lives");
+            livesElement.innerHTML = '';
+            for (let i = 0; i < lives; i++) {
+                livesElement.innerHTML += `<img src="res/assets/vida.png" alt="Vida" class="life-icon">`; // Altere o caminho do ícone de vida
+            }
+            livesElement.innerHTML += `Vidas restantes: ${lives}`;
+        }
+
+        function continueGame() {
+            window.location.href = "etapas2.html"; // Redireciona para a próxima página
+        }
+
+        function restartGame() {
+            lives = 3;
+            currentStep = 0;
+            currentOption = 0;
+            document.getElementById("resultModal").style.display = "none"; // Esconde a modal de resultado
+            document.getElementById("suspects").style.display = "none"; // Esconde a lista de suspeitos
+            document.getElementById("modal").style.display = "none"; // Esconde a modal principal
+            document.getElementById("options").style.display = "block"; // Mostra as opções
+            updateLives();
+        }
+
+        function showMenu() {
+            location.reload(); // Reinicia o jogo
+        }
+    </script>
+</body>
+</html>

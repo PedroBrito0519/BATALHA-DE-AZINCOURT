@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batalha de Azincourt - Diálogo com o Rei</title>
+    <link rel="stylesheet" href="res/css/batalha.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="icon" href="./res/assets/personagem.png">
+</head>
+<body>
+    <div class="container">
+        
+        <div class="dialogue">
+            <input type="text" id="dialogueInput" class="dialogue-input" placeholder="Aqui estou meu rei" readonly>
+            <img id="characterImage" src="res/assets/personagem.png" alt="Personagem" class="dialogue-character-img">
+           
+        </div>
+    </div>
+    <button class="btn_dialogo" id="nextButton" onclick="nextDialogue()">Continuar</button>
+
+    <script>
+        let dialogueIndex = 0;
+      const dialogues = [
+    { text: "Rei: Você foi chamado para uma missão importante", speaker: "king" },
+    { text: " O que o meu rei deseja de mim?", speaker: "character" },
+    
+    { text: "Rei: A batalha em Azincourt está se aproximando",  speaker: "king"},
+     { text: "Rei:Precisamos de sua bravura.", speaker: "king" },
+    
+    { text: " Estou pronto para lutar!", speaker: "character" },
+    
+    { text: "Rei: Sua coragem é admirável, são muitos franceses.", speaker: "king" },
+    { text: "Rei: Mas a estrategia e a chave", speaker: "king" },
+    
+    { text: " Que planos temos para enfrentar o inimigo?", speaker: "character" },
+    
+    { text: "Rei: Precisamos usar o terreno a nosso favor,", speaker: "king" },
+             { text: "Rei: Os arqueiros serão essenciais.", speaker: "king" },
+    
+    { text: " Eu me dedicarei a lutar pela vitória!", speaker: "character" },
+    
+    { text: "Rei: Vá, e que traga honra ao nosso reino.", speaker: "king" },
+    { text: "Rei: Prepare-se, a batalha!", speaker: "king" },
+        
+    { text: "Personagem: Eu não falharei! ", speaker: "character" }
+];
+
+
+function nextDialogue() {
+    if (dialogueIndex < dialogues.length) {
+        const currentDialogue = dialogues[dialogueIndex];
+        
+        // Atualiza o placeholder do input
+        document.getElementById("dialogueInput").placeholder = currentDialogue.text;
+
+        // Atualiza a imagem do personagem
+        const characterImage = document.getElementById("characterImage");
+        if (currentDialogue.speaker === "king") {
+            characterImage.src = "res/assets/REI.png"; // Exibe a imagem do rei
+        } else {
+            characterImage.src = "res/assets/personagem.png"; // Exibe a imagem do personagem
+        }
+
+        dialogueIndex++;
+    } else {
+        window.location.href = 'etapas.html'; // Redireciona para a próxima página
+    }
+}
+
+    </script>
+</body>
+</html>

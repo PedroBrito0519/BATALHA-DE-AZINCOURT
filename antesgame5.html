@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batalha de Azincourt - Etapa 5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="icon" href="res/assets/personagem.png">
+    <link rel="stylesheet" href="res/css/antesgame1.css">
+</head>
+<body>
+    <div class="container_modal">
+        <div class="dialogue">
+            <div class="dialogue-text">
+                <input type="text" id="dialogueInput" class="dialogue-input2" value="A batalha se aproxima de seu clímax." readonly>
+                <button class="btn_dialogo" id="nextButton" onclick="nextDialogue()">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dialogueIndex = 0;
+        const dialogues = [
+            { text: "A batalha se aproxima de seu clímax.", background: "res/css/guerra1.jpg" },
+            { text: "Os inimigos estão se preparando para um ataque final.", background: "res/css/guerra1.jpg" },
+            { text: "Você deve decidir como posicionar suas tropas.", background: "res/css/guerra1.jpg" },
+            { text: "Um movimento errado pode custar a vitória.", background: "res/css/guerra1.jpg" },
+            { text: "Confiança e estratégia serão suas melhores armas.", background: "res/css/guerra1.jpg" },
+            { text: "A vitória ou a derrota dependem de suas escolhas.", background: "res/css/guerra1.jpg" },
+            { text: "Prepare-se para a batalha decisiva.", background: "res/css/guerra1.jpg" },
+        ];
+
+        function nextDialogue() {
+            if (dialogueIndex < dialogues.length) {
+                const currentDialogue = dialogues[dialogueIndex];
+
+                // Atualiza o texto
+                document.getElementById("dialogueInput").value = currentDialogue.text;
+
+                // Atualiza o fundo da container_modal
+                document.querySelector('.container_modal').style.backgroundImage = `url(${currentDialogue.background})`;
+
+                dialogueIndex++;
+            } else {
+                window.location.href = 'game5.html'; // Redireciona para a próxima página
+            }
+        }
+    </script>
+</body>
+</html>

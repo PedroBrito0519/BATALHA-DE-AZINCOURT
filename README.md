@@ -1,2 +1,3 @@
-# Batalha-de-Azincourt
-Este e um jogo de RPG voltado a batalha de azincourt em 1415, uma das maiores batalhas na era medieval.
+# Fireboy-and-Watergirl
+## [Play](https://pavel-skala.github.io/Fireboy-and-Watergirl/)
+## [GitHub Repository](https://github.com/pavel-skala/Fireboy-and-Watergirl)

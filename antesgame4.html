@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batalha de Azincourt - Etapa 4</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="icon" href="res/assets/personagem.png">
+    <link rel="stylesheet" href="res/css/antesgame1.css">
+   
+</head>
+<body>
+    <div class="container_modal">
+        <div class="dialogue">
+            <div class="dialogue-text">
+                <input type="text" id="dialogueInput" class="dialogue-input2" value="Você chegou à quarta etapa da batalha." readonly>
+                <button class="btn_dialogo" id="nextButton" onclick="nextDialogue()">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dialogueIndex = 0;
+        const dialogues = [
+            { text: "Você chegou à quarta etapa da batalha.", background: "res/css/guerra2.jpg" },
+            { text: "Seus soldados estão exaustos, mas determinados a lutar.", background: "res/css/guerra2.jpg" },
+            { text: "O exército inimigo está se reorganizando para um ataque final.", background: "res/css/guerra2.jpg" },
+            { text: "Suas decisões podem mudar o rumo da batalha.", background: "res/css/guerra2.jpg" },
+            { text: "Uma estratégia sólida pode ser a chave para a vitória.", background: "res/css/guerra2.jpg" },
+            { text: "Prepare-se para o que está por vir.", background: "res/css/guerra2.jpg" },
+            { text: "A batalha está prestes a recomeçar.", background: "res/css/guerra2.jpg" },
+        ];
+
+        function nextDialogue() {
+            if (dialogueIndex < dialogues.length) {
+                const currentDialogue = dialogues[dialogueIndex];
+
+                // Atualiza o texto
+                document.getElementById("dialogueInput").value = currentDialogue.text;
+
+                // Atualiza o fundo da container_modal
+                document.querySelector('.container_modal').style.backgroundImage = `url(${currentDialogue.background})`;
+
+                dialogueIndex++;
+            } else {
+                window.location.href = 'game4.html'; // Redireciona para a próxima página
+            }
+        }
+    </script>
+</body>
+</html>
